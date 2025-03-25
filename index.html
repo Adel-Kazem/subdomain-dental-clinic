@@ -1,1 +1,671 @@
-<!DOCTYPE html><html><head><title>dental-clinic.revunova.net</title></head><body><h1>Welcome to dental-clinic.revunova.net</h1><p>Site created with Laravel GitHub Pages Automation</p></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smile Bright Dental Clinic</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    <script src="products.js"></script>
+</head>
+<body class="font-sans antialiased text-gray-800" x-data="{
+    isOpen: false,
+    scrollToTop() {
+        window.scrollTo({top: 0, behavior: 'smooth'});
+    },
+    cartItems: [],
+    cartOpen: false,
+    searchTerm: '',
+
+    // Product data
+    products: PRODUCTS,
+
+    get filteredProducts() {
+        return this.products.filter(product =>
+            product.name.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+            product.description.toLowerCase().includes(this.searchTerm.toLowerCase())
+        );
+    },
+
+    get cartTotal() {
+        return this.cartItems.reduce((total, item) => total + (item.price * item.quantity), 0).toFixed(2);
+    },
+
+    get cartCount() {
+        return this.cartItems.reduce((count, item) => count + item.quantity, 0);
+    },
+
+    addToCart(product) {
+        const existingItem = this.cartItems.find(item => item.id === product.id);
+
+        if (existingItem) {
+            existingItem.quantity += 1;
+        } else {
+            this.cartItems.push({...product, quantity: 1});
+        }
+    },
+
+    removeFromCart(productId) {
+        this.cartItems = this.cartItems.filter(item => item.id !== productId);
+    },
+
+    updateQuantity(productId, newQuantity) {
+        const item = this.cartItems.find(item => item.id === productId);
+        if (item) {
+            if (newQuantity <= 0) {
+                this.removeFromCart(productId);
+            } else {
+                item.quantity = newQuantity;
+            }
+        }
+    }
+}">
+
+<!-- SVG Sprites -->
+<svg xmlns="http://www.w3.org/2000/svg" class="hidden">
+    <symbol id="icon-cart" viewbox="0 0 24 24">
+        <path d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+    </symbol>
+    <symbol id="icon-whatsapp" viewbox="0 0 24 24">
+        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" fill="currentColor"></path>
+    </symbol>
+    <symbol id="icon-arrow-up" viewbox="0 0 24 24">
+        <path d="M12 19V5M5 12l7-7 7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+    </symbol>
+    <symbol id="icon-star" viewbox="0 0 24 24">
+        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+    </symbol>
+    <symbol id="icon-star-empty" viewbox="0 0 24 24">
+        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+    </symbol>
+    <symbol id="icon-search" viewbox="0 0 24 24">
+        <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+    </symbol>
+    <symbol id="icon-wheel" viewbox="0 0 24 24">
+        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none"></circle>
+        <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2" fill="none"></circle>
+        <path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.93 4.93l2.12 2.12M16.95 16.95l2.12 2.12M4.93 19.07l2.12-2.12M16.95 7.05l2.12-2.12" stroke="currentColor" stroke-width="2"></path>
+    </symbol>
+</svg>
+
+<!-- Header -->
+<header id="header" class="bg-gradient-to-r from-blue-600 to-blue-800 text-white shadow-lg">
+    <div class="container mx-auto px-4 py-6">
+        <div class="flex flex-col md:flex-row justify-between items-center">
+            <div class="flex items-center mb-4 md:mb-0">
+                <h1 id="logo-text" class="text-3xl font-bold">
+                    <span id="logo-prefix" class="text-white">Smile</span><span id="logo-highlight" class="text-yellow-300">Bright</span>
+                </h1>
+            </div>
+
+            <nav class="flex items-center space-x-6">
+                <a id="nav-home" href="#home" class="hover:text-yellow-300 transition duration-300">Home</a>
+                <a id="nav-services" href="#services" class="hover:text-yellow-300 transition duration-300">Services</a>
+                <a id="nav-products" href="#products" class="hover:text-yellow-300 transition duration-300">Products</a>
+                <a id="nav-team" href="#team" class="hover:text-yellow-300 transition duration-300">Our Team</a>
+                <a id="nav-contact" href="#contact" class="hover:text-yellow-300 transition duration-300">Contact</a>
+            </nav>
+        </div>
+    </div>
+</header>
+
+<!-- Hero Section -->
+<section id="home" class="py-20 bg-gradient-to-b from-blue-100 to-white">
+    <div class="container mx-auto px-4">
+        <div class="flex flex-col md:flex-row items-center">
+            <div class="md:w-1/2 mb-10 md:mb-0">
+                <h2 id="hero-heading" class="text-4xl md:text-5xl font-bold text-blue-800 mb-6">Your Smile Is Our
+                    Priority</h2>
+                <p id="hero-subheading" class="text-xl text-gray-700 mb-8">Experience world-class dental care with our
+                    team of expert professionals using the latest technology.</p>
+                <div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
+                    <a id="hero-button-appointment" href="#contact" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition duration-300 text-center">Book
+                        Appointment</a>
+                    <a id="hero-button-services" href="#services" class="bg-white hover:bg-gray-100 text-blue-600 font-bold py-3 px-6 rounded-lg border border-blue-600 transition duration-300 text-center">Our
+                        Services</a>
+                </div>
+            </div>
+            <div class="md:w-1/2">
+                <img id="hero-image" src="https://images.unsplash.com/photo-1606811971618-4486d14f3f99?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80" alt="Dental Clinic" class="rounded-lg shadow-xl w-full h-auto">
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Services Section -->
+<section id="services" class="py-20 bg-white">
+    <div class="container mx-auto px-4">
+        <h2 id="services-heading" class="text-3xl font-bold text-center text-blue-800 mb-12">Our Dental Services</h2>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <!-- Service 1 -->
+            <div id="service-1" class="bg-blue-50 rounded-lg p-6 shadow-md hover:shadow-lg transition duration-300">
+                <div class="bg-blue-600 text-white rounded-full w-16 h-16 flex items-center justify-center mb-4">
+                    <svg class="w-8 h-8">
+                        <use href="#icon-wheel"></use>
+                    </svg>
+                </div>
+                <h3 id="service-1-title" class="text-xl font-bold text-blue-800 mb-3">General Dentistry</h3>
+                <p id="service-1-description" class="text-gray-700">Comprehensive dental care including check-ups,
+                    cleanings, fillings, and preventative treatments to maintain your oral health.</p>
+            </div>
+
+            <!-- Service 2 -->
+            <div id="service-2" class="bg-blue-50 rounded-lg p-6 shadow-md hover:shadow-lg transition duration-300">
+                <div class="bg-blue-600 text-white rounded-full w-16 h-16 flex items-center justify-center mb-4">
+                    <svg class="w-8 h-8">
+                        <use href="#icon-star"></use>
+                    </svg>
+                </div>
+                <h3 id="service-2-title" class="text-xl font-bold text-blue-800 mb-3">Cosmetic Dentistry</h3>
+                <p id="service-2-description" class="text-gray-700">Transform your smile with our cosmetic services
+                    including teeth whitening, veneers, bonding, and smile makeovers.</p>
+            </div>
+
+            <!-- Service 3 -->
+            <div id="service-3" class="bg-blue-50 rounded-lg p-6 shadow-md hover:shadow-lg transition duration-300">
+                <div class="bg-blue-600 text-white rounded-full w-16 h-16 flex items-center justify-center mb-4">
+                    <svg class="w-8 h-8">
+                        <use href="#icon-wheel"></use>
+                    </svg>
+                </div>
+                <h3 id="service-3-title" class="text-xl font-bold text-blue-800 mb-3">Orthodontics</h3>
+                <p id="service-3-description" class="text-gray-700">Straighten your teeth with our modern orthodontic
+                    treatments including traditional braces and clear aligners.</p>
+            </div>
+
+            <!-- Service 4 -->
+            <div id="service-4" class="bg-blue-50 rounded-lg p-6 shadow-md hover:shadow-lg transition duration-300">
+                <div class="bg-blue-600 text-white rounded-full w-16 h-16 flex items-center justify-center mb-4">
+                    <svg class="w-8 h-8">
+                        <use href="#icon-star"></use>
+                    </svg>
+                </div>
+                <h3 id="service-4-title" class="text-xl font-bold text-blue-800 mb-3">Dental Implants</h3>
+                <p id="service-4-description" class="text-gray-700">Replace missing teeth with our state-of-the-art
+                    dental implants that look, feel, and function like natural teeth.</p>
+            </div>
+
+            <!-- Service 5 -->
+            <div id="service-5" class="bg-blue-50 rounded-lg p-6 shadow-md hover:shadow-lg transition duration-300">
+                <div class="bg-blue-600 text-white rounded-full w-16 h-16 flex items-center justify-center mb-4">
+                    <svg class="w-8 h-8">
+                        <use href="#icon-wheel"></use>
+                    </svg>
+                </div>
+                <h3 id="service-5-title" class="text-xl font-bold text-blue-800 mb-3">Pediatric Dentistry</h3>
+                <p id="service-5-description" class="text-gray-700">Specialized dental care for children in a friendly,
+                    comfortable environment designed to make dental visits fun and stress-free.</p>
+            </div>
+
+            <!-- Service 6 -->
+            <div id="service-6" class="bg-blue-50 rounded-lg p-6 shadow-md hover:shadow-lg transition duration-300">
+                <div class="bg-blue-600 text-white rounded-full w-16 h-16 flex items-center justify-center mb-4">
+                    <svg class="w-8 h-8">
+                        <use href="#icon-star"></use>
+                    </svg>
+                </div>
+                <h3 id="service-6-title" class="text-xl font-bold text-blue-800 mb-3">Emergency Dental Care</h3>
+                <p id="service-6-description" class="text-gray-700">Prompt treatment for dental emergencies including
+                    toothaches, broken teeth, and other urgent dental issues.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Products Section -->
+<section id="products" class="py-20 bg-gray-50">
+    <div class="container mx-auto px-4">
+        <h2 id="products-heading" class="text-3xl font-bold text-center text-blue-800 mb-6">Dental Products</h2>
+        <p id="products-subheading" class="text-center text-gray-700 mb-12 max-w-3xl mx-auto">Browse our selection of
+            premium dental care products recommended by our dentists for optimal oral health.</p>
+
+        <!-- Search Bar -->
+        <div id="search-container" class="mb-8 max-w-md mx-auto">
+            <div class="relative">
+                <input
+                        id="search-input"
+                        type="text"
+                        x-model="searchTerm"
+                        placeholder="Search products..."
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 pl-10"
+                >
+                <div class="absolute left-3 top-2.5 text-gray-400">
+                    <svg class="w-5 h-5">
+                        <use href="#icon-search"></use>
+                    </svg>
+                </div>
+            </div>
+        </div>
+
+        <!-- Products Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <template x-for="product in filteredProducts" :key="product.id">
+                <div class="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition duration-300">
+                    <div class="h-48 bg-gray-200 overflow-hidden">
+                        <img x-bind:src="product.image || 'https://images.unsplash.com/photo-1612887726773-e64e20cf87d1?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80'"
+                             alt="Product"
+                             class="w-full h-full object-cover">
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold text-blue-800 mb-2" x-text="product.name"></h3>
+                        <p class="text-gray-700 mb-4" x-text="product.description"></p>
+                        <div class="flex items-center mb-4">
+                            <template x-for="i in 5" :key="i">
+                                <svg class="w-5 h-5" x-bind:class="i <= product.rating ? 'text-yellow-400' : 'text-gray-300'">
+                                    <use x-bind:href="i <= product.rating ? '#icon-star' : '#icon-star-empty'"></use>
+                                </svg>
+                            </template>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-xl font-bold text-blue-600" x-text="'$' + product.price.toFixed(2)"></span>
+                            <button
+                                    @click="addToCart(product)"
+                                    class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition duration-300 flex items-center"
+                            >
+                                <svg class="w-5 h-5 mr-2">
+                                    <use href="#icon-cart"></use>
+                                </svg>
+                                Add to Cart
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </template>
+        </div>
+    </div>
+</section>
+
+<!-- Team Section -->
+<section id="team" class="py-20 bg-white">
+    <div class="container mx-auto px-4">
+        <h2 id="team-heading" class="text-3xl font-bold text-center text-blue-800 mb-6">Meet Our Team</h2>
+        <p id="team-subheading" class="text-center text-gray-700 mb-12 max-w-3xl mx-auto">Our team of experienced dental
+            professionals is committed to providing you with the highest quality care in a comfortable environment.</p>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <!-- Team Member 1 -->
+            <div id="team-member-1" class="bg-blue-50 rounded-lg overflow-hidden shadow-md hover:shadow-lg transition duration-300">
+                <img id="team-member-1-image" src="https://images.unsplash.com/photo-1622253692010-333f2da6031d?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="Dr. Sarah Johnson" class="w-full h-64 object-cover">
+                <div class="p-6">
+                    <h3 id="team-member-1-name" class="text-xl font-bold text-blue-800 mb-1">Dr. Sarah Johnson</h3>
+                    <p id="team-member-1-title" class="text-blue-600 mb-4">Lead Dentist, DDS</p>
+                    <p id="team-member-1-bio" class="text-gray-700">Dr. Johnson has over 15 years of experience in
+                        general and cosmetic dentistry. She specializes in smile makeovers and complex dental
+                        restorations.</p>
+                </div>
+            </div>
+
+            <!-- Team Member 2 -->
+            <div id="team-member-2" class="bg-blue-50 rounded-lg overflow-hidden shadow-md hover:shadow-lg transition duration-300">
+                <img id="team-member-2-image" src="https://images.unsplash.com/photo-1594824476967-48c8b964273f?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="Dr. Michael Chen" class="w-full h-64 object-cover">
+                <div class="p-6">
+                    <h3 id="team-member-2-name" class="text-xl font-bold text-blue-800 mb-1">Dr. Michael Chen</h3>
+                    <p id="team-member-2-title" class="text-blue-600 mb-4">Orthodontist, DMD</p>
+                    <p id="team-member-2-bio" class="text-gray-700">Dr. Chen is our orthodontics specialist with
+                        expertise in both traditional braces and clear aligners. He's passionate about creating
+                        beautiful smiles.</p>
+                </div>
+            </div>
+
+            <!-- Team Member 3 -->
+            <div id="team-member-3" class="bg-blue-50 rounded-lg overflow-hidden shadow-md hover:shadow-lg transition duration-300">
+                <img id="team-member-3-image" src="https://images.unsplash.com/photo-1559839734-2b71ea197ec2?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="Dr. Emily Rodriguez" class="w-full h-64 object-cover">
+                <div class="p-6">
+                    <h3 id="team-member-3-name" class="text-xl font-bold text-blue-800 mb-1">Dr. Emily Rodriguez</h3>
+                    <p id="team-member-3-title" class="text-blue-600 mb-4">Pediatric Dentist, DDS
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- Testimonials Section -->
+<section id="testimonials" class="py-20 bg-blue-50">
+    <div class="container mx-auto px-4">
+        <h2 id="testimonials-heading" class="text-3xl font-bold text-center text-blue-800 mb-6">What Our Patients
+            Say</h2>
+        <p id="testimonials-subheading" class="text-center text-gray-700 mb-12 max-w-3xl mx-auto">Don't just take our
+            word for it. Here's what our patients have to say about their experience at Smile Bright Dental.</p>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <!-- Testimonial 1 -->
+            <div id="testimonial-1" class="bg-white rounded-lg p-6 shadow-md hover:shadow-lg transition duration-300">
+                <div class="flex items-center mb-4">
+                    <div class="flex">
+                        <svg class="w-5 h-5 text-yellow-400">
+                            <use href="#icon-star"></use>
+                        </svg>
+                        <svg class="w-5 h-5 text-yellow-400">
+                            <use href="#icon-star"></use>
+                        </svg>
+                        <svg class="w-5 h-5 text-yellow-400">
+                            <use href="#icon-star"></use>
+                        </svg>
+                        <svg class="w-5 h-5 text-yellow-400">
+                            <use href="#icon-star"></use>
+                        </svg>
+                        <svg class="w-5 h-5 text-yellow-400">
+                            <use href="#icon-star"></use>
+                        </svg>
+                    </div>
+                </div>
+                <p id="testimonial-1-text" class="text-gray-700 mb-4">"I've been terrified of dentists my whole life,
+                    but Dr. Johnson and her team made me feel completely at ease. The care I received was exceptional,
+                    and for the first time, I actually look forward to my dental appointments!"</p>
+                <div class="flex items-center">
+                    <img id="testimonial-1-image" src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-1.2.1&auto=format&fit=crop&w=100&q=80" alt="Patient" class="w-12 h-12 rounded-full object-cover mr-4">
+                    <div>
+                        <h4 id="testimonial-1-name" class="font-bold text-blue-800">Jennifer Adams</h4>
+                        <p id="testimonial-1-info" class="text-sm text-gray-600">Patient for 2 years</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Testimonial 2 -->
+            <div id="testimonial-2" class="bg-white rounded-lg p-6 shadow-md hover:shadow-lg transition duration-300">
+                <div class="flex items-center mb-4">
+                    <div class="flex">
+                        <svg class="w-5 h-5 text-yellow-400">
+                            <use href="#icon-star"></use>
+                        </svg>
+                        <svg class="w-5 h-5 text-yellow-400">
+                            <use href="#icon-star"></use>
+                        </svg>
+                        <svg class="w-5 h-5 text-yellow-400">
+                            <use href="#icon-star"></use>
+                        </svg>
+                        <svg class="w-5 h-5 text-yellow-400">
+                            <use href="#icon-star"></use>
+                        </svg>
+                        <svg class="w-5 h-5 text-yellow-400">
+                            <use href="#icon-star"></use>
+                        </svg>
+                    </div>
+                </div>
+                <p id="testimonial-2-text" class="text-gray-700 mb-4">"My son used to be afraid of going to the dentist
+                    until we found Dr. Rodriguez. She's amazing with kids! The office is so welcoming, and they make
+                    dental care fun. We couldn't be happier with Smile Bright Dental."</p>
+                <div class="flex items-center">
+                    <img id="testimonial-2-image" src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-1.2.1&auto=format&fit=crop&w=100&q=80" alt="Patient" class="w-12 h-12 rounded-full object-cover mr-4">
+                    <div>
+                        <h4 id="testimonial-2-name" class="font-bold text-blue-800">Robert Thompson</h4>
+                        <p id="testimonial-2-info" class="text-sm text-gray-600">Patient for 3 years</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Testimonial 3 -->
+            <div id="testimonial-3" class="bg-white rounded-lg p-6 shadow-md hover:shadow-lg transition duration-300">
+                <div class="flex items-center mb-4">
+                    <div class="flex">
+                        <svg class="w-5 h-5 text-yellow-400">
+                            <use href="#icon-star"></use>
+                        </svg>
+                        <svg class="w-5 h-5 text-yellow-400">
+                            <use href="#icon-star"></use>
+                        </svg>
+                        <svg class="w-5 h-5 text-yellow-400">
+                            <use href="#icon-star"></use>
+                        </svg>
+                        <svg class="w-5 h-5 text-yellow-400">
+                            <use href="#icon-star"></use>
+                        </svg>
+                        <svg class="w-5 h-5 text-yellow-400">
+                            <use href="#icon-star"></use>
+                        </svg>
+                    </div>
+                </div>
+                <p id="testimonial-3-text" class="text-gray-700 mb-4">"Dr. Chen transformed my smile with Invisalign,
+                    and I couldn't be happier with the results! The entire process was smooth, and the staff was always
+                    friendly and professional. I highly recommend Smile Bright Dental!"</p>
+                <div class="flex items-center">
+                    <img id="testimonial-3-image" src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?ixlib=rb-1.2.1&auto=format&fit=crop&w=100&q=80" alt="Patient" class="w-12 h-12 rounded-full object-cover mr-4">
+                    <div>
+                        <h4 id="testimonial-3-name" class="font-bold text-blue-800">Maria Garcia</h4>
+                        <p id="testimonial-3-info" class="text-sm text-gray-600">Patient for 1 year</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Contact Section -->
+<section id="contact" class="py-20 bg-white">
+    <div class="container mx-auto px-4">
+        <h2 id="contact-heading" class="text-3xl font-bold text-center text-blue-800 mb-6">Contact Us</h2>
+        <p id="contact-subheading" class="text-center text-gray-700 mb-12 max-w-3xl mx-auto">Have questions or ready to
+            schedule your appointment? Reach out to us today.</p>
+
+        <div class="flex flex-col md:flex-row gap-10">
+            <div class="md:w-1/2">
+                <form id="contact-form" class="space-y-6">
+                    <div>
+                        <label id="name-label" for="name" class="block text-gray-700 font-medium mb-2">Your Name</label>
+                        <input id="name-input" type="text" name="name" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label id="email-label" for="email" class="block text-gray-700 font-medium mb-2">Email
+                            Address</label>
+                        <input id="email-input" type="email" name="email" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label id="phone-label" for="phone" class="block text-gray-700 font-medium mb-2">Phone
+                            Number</label>
+                        <input id="phone-input" type="tel" name="phone" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label id="message-label" for="message" class="block text-gray-700 font-medium mb-2">Your
+                            Message</label>
+                        <textarea id="message-input" name="message" rows="4" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+                    </div>
+                    <button id="submit-button" type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition duration-300">
+                        Send Message
+                    </button>
+                </form>
+            </div>
+
+            <div class="md:w-1/2">
+                <div class="bg-blue-50 p-6 rounded-lg shadow-md h-full">
+                    <h3 id="clinic-info-heading" class="text-xl font-bold text-blue-800 mb-4">Clinic Information</h3>
+
+                    <div class="space-y-4">
+                        <div class="flex items-start">
+                            <div class="bg-blue-600 text-white rounded-full w-10 h-10 flex items-center justify-center mr-4 mt-1 flex-shrink-0">
+                                <svg class="w-5 h-5">
+                                    <use href="#icon-wheel"></use>
+                                </svg>
+                            </div>
+                            <div>
+                                <h4 id="address-heading" class="font-bold text-blue-800">Address</h4>
+                                <p id="address-text" class="text-gray-700">123 Dental Street, Suite 100<br>New York, NY
+                                    10001</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start">
+                            <div class="bg-blue-600 text-white rounded-full w-10 h-10 flex items-center justify-center mr-4 mt-1 flex-shrink-0">
+                                <svg class="w-5 h-5">
+                                    <use href="#icon-wheel"></use>
+                                </svg>
+                            </div>
+                            <div>
+                                <h4 id="hours-heading" class="font-bold text-blue-800">Office Hours</h4>
+                                <p id="hours-text" class="text-gray-700">Monday - Friday: 8:00 AM - 6:00 PM<br>Saturday:
+                                    9:00 AM - 2:00 PM<br>Sunday: Closed</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start">
+                            <div class="bg-blue-600 text-white rounded-full w-10 h-10 flex items-center justify-center mr-4 mt-1 flex-shrink-0">
+                                <svg class="w-5 h-5">
+                                    <use href="#icon-wheel"></use>
+                                </svg>
+                            </div>
+                            <div>
+                                <h4 id="contact-info-heading" class="font-bold text-blue-800">Contact Information</h4>
+                                <p id="phone-text" class="text-gray-700">Phone: (555) 123-4567</p>
+                                <p id="email-text" class="text-gray-700">Email: info@smilebrightdental.com</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-8">
+                        <h4 id="map-heading" class="font-bold text-blue-800 mb-4">Find Us</h4>
+                        <div id="map-container" class="h-48 bg-gray-200 rounded-lg overflow-hidden">
+                            <!-- Map would be embedded here -->
+                            <img id="map-image" src="https://images.unsplash.com/photo-1569336415962-a4bd9f69cd83?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80" alt="Map" class="w-full h-full object-cover">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer id="footer" class="bg-blue-800 text-white py-12">
+    <div class="container mx-auto px-4">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div>
+                <h3 id="footer-about-heading" class="text-xl font-bold mb-4">About Smile Bright Dental</h3>
+                <p id="footer-about-text" class="mb-4">We are committed to providing exceptional dental care in a
+                    comfortable and friendly environment. Our team of experienced professionals uses the latest
+                    technology to ensure the best results for our patients.</p>
+            </div>
+
+            <div>
+                <h3 id="footer-links-heading" class="text-xl font-bold mb-4">Quick Links</h3>
+                <ul class="space-y-2">
+                    <li>
+                        <a id="footer-link-home" href="#home" class="hover:text-yellow-300 transition duration-300">Home</a>
+                    </li>
+                    <li>
+                        <a id="footer-link-services" href="#services" class="hover:text-yellow-300 transition duration-300">Services</a>
+                    </li>
+                    <li>
+                        <a id="footer-link-products" href="#products" class="hover:text-yellow-300 transition duration-300">Products</a>
+                    </li>
+                    <li><a id="footer-link-team" href="#team" class="hover:text-yellow-300 transition duration-300">Our
+                        Team</a></li>
+                    <li>
+                        <a id="footer-link-contact" href="#contact" class="hover:text-yellow-300 transition duration-300">Contact</a>
+                    </li>
+                </ul>
+            </div>
+
+            <div>
+                <h3 id="footer-newsletter-heading" class="text-xl font-bold mb-4">Newsletter</h3>
+                <p id="footer-newsletter-text" class="mb-4">Subscribe to our newsletter for dental tips, special offers,
+                    and clinic updates.</p>
+                <form id="newsletter-form" class="flex">
+                    <input id="newsletter-input" type="email" placeholder="Your email address" class="px-4 py-2 rounded-l-lg w-full text-gray-800 focus:outline-none">
+                    <button id="newsletter-button" type="submit" class="bg-yellow-400 hover:bg-yellow-500 text-blue-800 font-bold px-4 py-2 rounded-r-lg transition duration-300">
+                        Subscribe
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <hr class="border-blue-700 my-8">
+
+        <div class="flex flex-col md:flex-row justify-between items-center">
+            <p id="copyright-text" class="text-sm mb-4 md:mb-0">&copy; 2025 Smile Bright Dental. All rights
+                reserved.</p>
+            <p id="credit-text" class="text-sm">Website designed with ♥ by RN Team</p>
+        </div>
+    </div>
+</footer>
+
+<!-- WhatsApp Button -->
+<a id="whatsapp-link" href="https://wa.me/15551234567" target="_blank" class="fixed bottom-4 right-4 bg-green-500 text-white p-3 rounded-full shadow-lg hover:bg-green-600 transition duration-300 z-10">
+    <svg class="w-6 h-6">
+        <use href="#icon-whatsapp"></use>
+    </svg>
+</a>
+
+<!-- Go Up Button -->
+<button id="go-up-button" @click="scrollToTop()" class="fixed bottom-4 left-4 bg-blue-600 text-white p-3 rounded-full shadow-lg hover:bg-blue-700 transition duration-300 z-10">
+    <svg class="w-6 h-6">
+        <use href="#icon-arrow-up"></use>
+    </svg>
+</button>
+
+<!-- Cart Icon -->
+<div x-show="cartCount > 0" class="fixed right-4 top-1/2 transform -translate-y-1/2 z-10">
+    <button
+            @click="cartOpen = !cartOpen"
+            class="relative bg-blue-600 text-white p-3 rounded-full shadow-lg hover:bg-blue-700 transition duration-300"
+    >
+        <svg class="w-6 h-6">
+            <use href="#icon-cart"></use>
+        </svg>
+        <span class="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center" x-text="cartCount"></span>
+    </button>
+</div>
+
+<!-- Cart Sidebar -->
+<div
+        x-show="cartOpen"
+        @click.away="cartOpen = false"
+        x-transition:enter="transition ease-out duration-300"
+        x-transition:enter-start="opacity-0 transform translate-x-full"
+        x-transition:enter-end="opacity-100 transform translate-x-0"
+        x-transition:leave="transition ease-in duration-300"
+        x-transition:leave-start="opacity-100 transform translate-x-0"
+        x-transition:leave-end="opacity-0 transform translate-x-full"
+        class="fixed top-0 right-0 h-full w-full sm:w-96 bg-white shadow-xl z-50 overflow-y-auto"
+>
+    <div class="p-6">
+        <div class="flex justify-between<div class=" flex justify-between items-center mb-6
+        "> <h3 id="cart-heading" class="text-xl font-bold text-blue-800">Your Cart</h3>
+        <button @click="cartOpen = false" class="text-gray-500 hover:text-gray-700">
+            <span class="text-2xl">&times;</span></button>
+    </div>
+    <div x-show="cartItems.length === 0" class="text-center py-8">
+        <p id="empty-cart-text" class="text-gray-500">Your cart is empty</p>
+    </div>
+
+    <template x-for="item in cartItems" :key="item.id">
+        <div class="flex border-b border-gray-200 py-4">
+            <div class="w-20 h-20 bg-gray-200 rounded overflow-hidden mr-4">
+                <img x-bind:src="item.image || 'https://images.unsplash.com/photo-1612887726773-e64e20cf87d1?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80'" alt="Product" class="w-full h-full object-cover">
+            </div>
+            <div class="flex-1">
+                <h4 class="font-bold text-blue-800" x-text="item.name"></h4>
+                <p class="text-gray-600 text-sm" x-text="'$' + item.price.toFixed(2)"></p>
+                <div class="flex items-center mt-2">
+                    <button
+                            @click="updateQuantity(item.id, item.quantity - 1)"
+                            class="bg-gray-200 text-gray-700 px-2 py-1 rounded-l"
+                    >-
+                    </button>
+                    <span class="bg-gray-100 px-3 py-1" x-text="item.quantity"></span>
+                    <button
+                            @click="updateQuantity(item.id, item.quantity + 1)"
+                            class="bg-gray-200 text-gray-700 px-2 py-1 rounded-r"
+                    >+
+                    </button>
+                    <button
+                            @click="removeFromCart(item.id)"
+                            class="ml-auto text-red-500 hover:text-red-700"
+                    >Remove
+                    </button>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <div x-show="cartItems.length > 0" class="mt-6">
+        <div class="flex justify-between font-bold text-lg mb-6">
+            <span>Total:</span>
+            <span x-text="'$' + cartTotal"></span>
+        </div>
+        <button class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition duration-300">
+            Checkout
+        </button>
+    </div>
+</div>
+</div>
+</body>
+</html>
